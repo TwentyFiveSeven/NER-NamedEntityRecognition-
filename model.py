@@ -6,6 +6,7 @@ class Model:
         self.parameter = parameter
         self.number = str(i)
 
+    #output_node name설정을 어떻게 해야한담..
     def build_model(self):
         with tf.variable_scope(self.number):
             self._build_placeholder()
@@ -14,18 +15,15 @@ class Model:
             self._embedding_matrix = []
             for item in self.parameter["embedding"]:
                 self._embedding_matrix.append(self._build_embedding(item[1], item[2], name="embedding_" + self.number + item[0]))
-            print('------------------* embedding val *------------------')
             # 각각의 임베딩 값을 가져온다
             self._embeddings = []
             self._embeddings.append(tf.nn.embedding_lookup(self._embedding_matrix[0], self.morph))
             self._embeddings.append(tf.nn.embedding_lookup(self._embedding_matrix[1], self.character))
-            print('------------------* cal embedding val *------------------')
             # 음절을 이용한 임베딩 값을 구한다.
             character_embedding = tf.reshape(self._embeddings[1], [-1, self.parameter["word_length"], self.parameter["embedding"][1][2]])
             char_len = tf.reshape(self.character_len, [-1])
 
             character_emb_rnn, _, _ = self._build_birnn_model(character_embedding, char_len, self.parameter["char_lstm_units"], self.dropout_rate, last=True, scope="char_layer" + self.number)
-            print('------------------* concat embedding val *------------------')
             # 위에서 구한 모든 임베딩 값을 concat 한다.
             all_data_emb = self.ne_dict
             for i in range(0, len(self._embeddings)-1):
@@ -42,6 +40,7 @@ class Model:
             self.train_op = self._build_output_layer(crf_cost)
             self.cost = crf_cost
 
+    #input_node name 설정
     def _build_placeholder(self):
         self.morph = tf.placeholder(tf.int32, [None, None], name = "morph")
         self.ne_dict = tf.placeholder(tf.float32, [None, None, int(6 / 2)],name = "ne_dict")
