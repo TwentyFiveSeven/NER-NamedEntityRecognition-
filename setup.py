@@ -7,7 +7,7 @@ setup(
     version='1',
     description='NER_NSML_Baseline',
     install_requires=[
-        'tensorflow-gpu==1.15.4',
+        'tensorflow-gpu==2.12.0',
         'numpy>=1.11.0'
     ]
 )
